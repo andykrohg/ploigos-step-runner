@@ -59,7 +59,7 @@ Results expected from previous steps that this step requires.
 Results
 -------
 
-Results output by this step.
+Results artifacts output by this step.
 
 | Result Key  | Description
 |-------------|------------
@@ -167,7 +167,7 @@ class SemanticVersion(StepImplementer): # pylint: disable=too-few-public-methods
 
         Returns
         -------
-        dict
+        StepResult
             Results of running this step.
         """
         step_result = StepResult.from_step_implementer(self)
