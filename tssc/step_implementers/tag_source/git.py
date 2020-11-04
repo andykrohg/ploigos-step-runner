@@ -57,7 +57,7 @@ import sys
 from io import StringIO
 
 import sh
-from tssc import DefaultSteps, StepImplementer
+from tssc import StepImplementer
 from tssc.step_result import StepResult
 
 DEFAULT_CONFIG = {}

@@ -104,8 +104,8 @@ class TestStepImplementerSemanticVersionGenerateMetadata(BaseStepImplementerTest
 
             expected_step_result = StepResult(step_name='generate-metadata', sub_step_name='SemanticVersion', sub_step_implementer_name='SemanticVersion')
             expected_step_result.success = False
-            expected_step_result.message = f'No value for (app-version) provided via runtime flag' \
-                '(app-version) or from prior step implementer ({self.step_name}).'
+            expected_step_result.message = 'No value for (app-version) provided via runtime flag (app-version) ' \
+                                           'or from prior step implementer (generate-metadata).'
 
             self.assertEqual(result.get_step_result(), expected_step_result.get_step_result())
 
@@ -137,8 +137,8 @@ class TestStepImplementerSemanticVersionGenerateMetadata(BaseStepImplementerTest
 
             expected_step_result = StepResult(step_name='generate-metadata', sub_step_name='SemanticVersion', sub_step_implementer_name='SemanticVersion')
             expected_step_result.success = False
-            expected_step_result.message = f'No value for (pre-release) provided via runtime flag' \
-                '(pre-release) or from prior step implementer ({self.step_name}).'
+            expected_step_result.message = 'No value for (pre-release) provided via runtime flag (pre-release) ' \
+                                           'or from prior step implementer (generate-metadata).'
 
             self.assertEqual(result.get_step_result(), expected_step_result.get_step_result())
 
@@ -170,8 +170,8 @@ class TestStepImplementerSemanticVersionGenerateMetadata(BaseStepImplementerTest
 
             expected_step_result = StepResult(step_name='generate-metadata', sub_step_name='SemanticVersion', sub_step_implementer_name='SemanticVersion')
             expected_step_result.success = False
-            expected_step_result.message = f'No value for (build) provided via runtime flag' \
-                '(build) or from prior step implementer ({self.step_name}).'
+            expected_step_result.message = 'No value for (build) provided via runtime flag (build) ' \
+                                           'or from prior step implementer (generate-metadata).'
 
             self.assertEqual(result.get_step_result(), expected_step_result.get_step_result())
 
