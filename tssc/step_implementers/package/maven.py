@@ -106,19 +106,6 @@ Examples
         </properties>
     </project>
 
-*Step Results after this Step Implementer*
-
-    {'tssc-results': {
-        'package': [
-            {
-                'path': '{FULL_PATH_TO_GENERATED_ARTIFACT}',
-                'artifact-id': 'my-app',
-                'group-id': 'com.mycompany.app'
-                'package-type': 'war',
-                'pom-path': '{FULL_PATH_TO_POM}'
-            }
-        ]
-    }}
 """
 import sys
 import os
@@ -140,6 +127,7 @@ DEFAULT_CONFIG = {
 REQUIRED_CONFIG_KEYS = [
     'pom-file'
 ]
+
 
 class Maven(StepImplementer):
     """
@@ -261,28 +249,28 @@ class Maven(StepImplementer):
             package_type = 'jar'
 
         step_result.add_artifact(
-            name = 'path',
-            value = os.path.join(
-                    os.path.dirname(os.path.abspath(pom_file)),
-                    artifact_parent_dir, artifact_file_names[0]),
-            value_type = 'path'
+            name='path',
+            value=os.path.join(
+                os.path.dirname(os.path.abspath(pom_file)),
+                artifact_parent_dir, artifact_file_names[0]),
+            value_type='path'
         )
         step_result.add_artifact(
-            name = 'artifact-id',
-            value = artifact_id
+            name='artifact-id',
+            value=artifact_id
         )
         step_result.add_artifact(
-            name = 'group-id',
-            value = group_id
+            name='group-id',
+            value=group_id
         )
         step_result.add_artifact(
-            name = 'package-type',
-            value = package_type
+            name='package-type',
+            value=package_type
         )
         step_result.add_artifact(
-            name = 'pom-path',
-            value = pom_file,
-            value_type = 'path'
+            name='pom-path',
+            value=pom_file,
+            value_type='path'
         )
 
         return step_result

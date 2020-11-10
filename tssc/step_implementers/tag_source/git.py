@@ -43,14 +43,6 @@ Results output by this step.
 |------------|------------
 | `tag`      | This is the value that was used to tag the source.
 
-
-**Example**
-
-    'tssc-results': {
-        'tag-source': {
-            'git-tag': 'latest'
-        }
-    }
 """
 import re
 import sys
@@ -124,12 +116,12 @@ class Git(StepImplementer):
         AssertionError
             If the given `runtime_step_config` is not valid with a message as to why.
         """
-        super()._validate_runtime_step_config(runtime_step_config) #pylint: disable=protected-access
+        super()._validate_runtime_step_config(runtime_step_config)  # pylint: disable=protected-access
 
         assert ( \
-            all(element in runtime_step_config for element in AUTHENTICATION_CONFIG) or \
-            not any(element in runtime_step_config for element in AUTHENTICATION_CONFIG) \
-        ), 'Either username or password is not set. Neither or both must be set.'
+                    all(element in runtime_step_config for element in AUTHENTICATION_CONFIG) or \
+                    not any(element in runtime_step_config for element in AUTHENTICATION_CONFIG) \
+            ), 'Either username or password is not set. Neither or both must be set.'
 
     def _run_step(self):
         """Runs the TSSC step implemented by this StepImplementer.
@@ -145,8 +137,8 @@ class Git(StepImplementer):
         password = None
 
         if self.has_config_value(AUTHENTICATION_CONFIG):
-            if(self.get_config_value('username') \
-              and self.get_config_value('password')):
+            if (self.get_config_value('username') \
+                    and self.get_config_value('password')):
                 username = self.get_config_value('username')
                 password = self.get_config_value('password')
             else:
@@ -179,8 +171,8 @@ class Git(StepImplementer):
             self.__git_push(None)
 
         step_result.add_artifact(
-            name = 'tag',
-            value = tag
+            name='tag',
+            value=tag
         )
 
         return step_result
