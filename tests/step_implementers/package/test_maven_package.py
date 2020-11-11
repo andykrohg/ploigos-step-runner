@@ -32,7 +32,7 @@ class TestStepImplementerMavenPackageBase(BaseStepImplementerTestCase):
             work_dir_path=work_dir_path
         )
 
-# TESTS FOR configuration checks
+    # TESTS FOR configuration checks
     def test_step_implementer_config_defaults(self):
         defaults = Maven.step_implementer_config_defaults()
         expected_defaults = {
@@ -61,7 +61,6 @@ class TestStepImplementerMavenPackageBase(BaseStepImplementerTestCase):
             os.path.dirname(os.path.abspath(pom_file)),
             artifact_parent_dir)
 
-
         def mvn_side_effect(*args, **kwargs):
             if 'clean' in args:
                 if os.path.exists(target_dir_path):
@@ -84,11 +83,11 @@ class TestStepImplementerMavenPackageBase(BaseStepImplementerTestCase):
         with TempDirectory() as temp_dir:
             artifact_id = 'my-app'
             version = '1.0'
-            package = 'jar'
+            package = 'war'
             results_dir_path = os.path.join(temp_dir.path, 'tssc-results')
             results_file_name = 'tssc-results.yml'
             work_dir_path = os.path.join(temp_dir.path, 'working')
-            temp_dir.write('pom.xml',b'''<project>
+            temp_dir.write('pom.xml', b'''<project>
                 <modelVersion>4.0.0</modelVersion>
                 <groupId>com.mycompany.app</groupId>
                 <artifactId>my-app</artifactId>
@@ -117,18 +116,21 @@ class TestStepImplementerMavenPackageBase(BaseStepImplementerTestCase):
 
             result = step_implementer._run_step()
 
+            package_artifacts = {
+                'path': temp_dir.path + '/target/my-app-1.0.war',
+                'artifact-id': 'my-app',
+                'group-id': 'com.mycompany.app',
+                'package-type': 'war',
+                'pom-path': pom_file_path
+            }
             expected_step_result = StepResult(
                 step_name='package',
                 sub_step_name='Maven',
                 sub_step_implementer_name='Maven'
             )
-            expected_step_result.add_artifact(name='path', value=temp_dir.path + '/target/my-app-1.0.jar', value_type='path')
-            expected_step_result.add_artifact(name='artifact-id', value='my-app')
-            expected_step_result.add_artifact(name='group-id', value='com.mycompany.app')
-            expected_step_result.add_artifact(name='package-type', value='war')
-            expected_step_result.add_artifact(name='pom-path', value=pom_file_path, value_type='path')
+            expected_step_result.add_artifact(name='package-artifacts', value=[package_artifacts])
 
-            self.assertEqual(result.get_step_result(), expected_step_result.get_step_result())
+            self.assertEqual(expected_step_result.get_step_result(), result.get_step_result())
 
     @patch('sh.mvn', create=True)
     def test_run_step_pass_no_package_in_pom(self, mvn_mock):
@@ -167,14 +169,18 @@ class TestStepImplementerMavenPackageBase(BaseStepImplementerTestCase):
 
             result = step_implementer._run_step()
 
+            package_artifacts = {
+                'path': temp_dir.path + '/target/my-app-1.0.jar',
+                'artifact-id': 'my-app',
+                'group-id': 'com.mycompany.app',
+                'package-type': 'jar',
+                'pom-path': pom_file_path
+            }
             expected_step_result = StepResult(step_name='package', sub_step_name='Maven', sub_step_implementer_name='Maven')
-            expected_step_result.add_artifact(name='path', value=temp_dir.path + '/target/my-app-1.0.jar', value_type='path')
-            expected_step_result.add_artifact(name='artifact-id', value='my-app')
-            expected_step_result.add_artifact(name='group-id', value='com.mycompany.app')
-            expected_step_result.add_artifact(name='package-type', value='jar')
-            expected_step_result.add_artifact(name='pom-path', value=pom_file_path, value_type='path')
+            expected_step_result.add_artifact(name='package-artifacts', value=[package_artifacts])
 
             self.assertEqual(result.get_step_result(), expected_step_result.get_step_result())
+
 
     @patch('sh.mvn', create=True)
     def test_run_step_fail_no_pom(self, mvn_mock):

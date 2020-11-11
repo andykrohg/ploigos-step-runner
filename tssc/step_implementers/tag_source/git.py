@@ -202,11 +202,12 @@ class Git(StepImplementer):
                 )
                 git_url = out.getvalue().rstrip()
 
-                # remove ANYTHING@ from begining of git_url since step will pass in its own
+                # remove ANYTHING@ from beginning of git_url since step will pass in its own
                 # username and password
                 #
                 # Regex:
-                #   ^[^@]+@ - match from begining of line any charcter up until an @ and then the @
+                #   ^[^@]+@ - match from beginning of line any character up until
+                #             an @ and then the @
                 #   (.*) - match any character and capture to capture group 1
                 #   \1 - capture group 1 which is the http or https if there was one
                 #   \2 - capture group 2 which is anything after the first @ if there was one
@@ -222,10 +223,10 @@ class Git(StepImplementer):
     def __git_tag(git_tag_value):
         try:
             # NOTE:
-            # this force is only needed locally in case of a re-reun of the same pipeline
+            # this force is only needed locally in case of a re-run of the same pipeline
             # without a fresh check out. You will notice there is no force on the push
             # making this an acceptable work around to the issue since on the off chance
-            # actually orverwriting a tag with a different comment, the push will fail
+            # actually overwriting a tag with a different comment, the push will fail
             # because the tag will be attached to a different git hash.
             sh.git.tag(  # pylint: disable=no-member
                 git_tag_value,

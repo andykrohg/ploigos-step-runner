@@ -248,29 +248,23 @@ class Maven(StepImplementer):
         except ValueError:
             package_type = 'jar'
 
+        package_artifacts = {
+            'path': os.path.join(
+                    os.path.dirname(os.path.abspath(pom_file)),
+                    artifact_parent_dir,
+                    artifact_file_names[0]
+            ),
+            'artifact-id': artifact_id,
+            'group-id': group_id,
+            'package-type': package_type,
+            'pom-path': pom_file
+        }
+
+        # Currently, package returns ONE 'artifact', eg: one war file
+        # However, in the future, an ARRAY could be returned, eg: several jar files
         step_result.add_artifact(
-            name='path',
-            value=os.path.join(
-                os.path.dirname(os.path.abspath(pom_file)),
-                artifact_parent_dir, artifact_file_names[0]),
-            value_type='path'
-        )
-        step_result.add_artifact(
-            name='artifact-id',
-            value=artifact_id
-        )
-        step_result.add_artifact(
-            name='group-id',
-            value=group_id
-        )
-        step_result.add_artifact(
-            name='package-type',
-            value=package_type
-        )
-        step_result.add_artifact(
-            name='pom-path',
-            value=pom_file,
-            value_type='path'
+           name='package-artifacts',
+           value=[package_artifacts]
         )
 
         return step_result
