@@ -1,18 +1,15 @@
+# pylint: disable=missing-module-docstring
+# pylint: disable=missing-class-docstring
+# pylint: disable=missing-function-docstring
 import os
-import re
-from io import IOBase, StringIO
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
+from pathlib import Path
 import sh
 from testfixtures import TempDirectory
-from tests.helpers.base_step_implementer_test_case import \
-    BaseStepImplementerTestCase
-from tssc.config.config import Config
+from tests.helpers.base_step_implementer_test_case import BaseStepImplementerTestCase
 from tssc.step_implementers.package import Maven
 from tssc.step_result import StepResult
-from tssc.workflow_result import WorkflowResult
-from tests.helpers.test_utils import Any
-from pathlib import Path
 
 
 class TestStepImplementerMavenPackageBase(BaseStepImplementerTestCase):
@@ -101,7 +98,7 @@ class TestStepImplementerMavenPackageBase(BaseStepImplementerTestCase):
             pom_file_path = os.path.join(temp_dir.path, 'pom.xml')
 
             step_config = {'pom-file': pom_file_path}
-            
+
             artifact_file_name = f'{artifact_id}-{version}.{package}'
 
             step_implementer = self.create_step_implementer(
@@ -114,13 +111,17 @@ class TestStepImplementerMavenPackageBase(BaseStepImplementerTestCase):
             )
 
             mvn_mock.side_effect = TestStepImplementerMavenPackageBase.create_mvn_side_effect(
-                pom_file_path, 
-                'target', 
+                pom_file_path,
+                'target',
                 [artifact_file_name])
-            
+
             result = step_implementer._run_step()
 
-            expected_step_result = StepResult(step_name='package', sub_step_name='Maven', sub_step_implementer_name='Maven')
+            expected_step_result = StepResult(
+                step_name='package',
+                sub_step_name='Maven',
+                sub_step_implementer_name='Maven'
+            )
             expected_step_result.add_artifact(name='path', value=temp_dir.path + '/target/my-app-1.0.jar', value_type='path')
             expected_step_result.add_artifact(name='artifact-id', value='my-app')
             expected_step_result.add_artifact(name='group-id', value='com.mycompany.app')
@@ -147,7 +148,7 @@ class TestStepImplementerMavenPackageBase(BaseStepImplementerTestCase):
             pom_file_path = os.path.join(temp_dir.path, 'pom.xml')
 
             step_config = {'pom-file': pom_file_path}
-            
+
             artifact_file_name = f'{artifact_id}-{version}.{package}'
 
             step_implementer = self.create_step_implementer(
@@ -160,10 +161,10 @@ class TestStepImplementerMavenPackageBase(BaseStepImplementerTestCase):
             )
 
             mvn_mock.side_effect = TestStepImplementerMavenPackageBase.create_mvn_side_effect(
-                pom_file_path, 
-                'target', 
+                pom_file_path,
+                'target',
                 [artifact_file_name])
-            
+
             result = step_implementer._run_step()
 
             expected_step_result = StepResult(step_name='package', sub_step_name='Maven', sub_step_implementer_name='Maven')
@@ -174,7 +175,7 @@ class TestStepImplementerMavenPackageBase(BaseStepImplementerTestCase):
             expected_step_result.add_artifact(name='pom-path', value=pom_file_path, value_type='path')
 
             self.assertEqual(result.get_step_result(), expected_step_result.get_step_result())
-    
+
     @patch('sh.mvn', create=True)
     def test_run_step_fail_no_pom(self, mvn_mock):
         with TempDirectory() as temp_dir:
@@ -183,7 +184,7 @@ class TestStepImplementerMavenPackageBase(BaseStepImplementerTestCase):
             work_dir_path = os.path.join(temp_dir.path, 'working')
 
             step_config = {}
-            
+
             step_implementer = self.create_step_implementer(
                 step_config=step_config,
                 step_name='package',
@@ -192,7 +193,7 @@ class TestStepImplementerMavenPackageBase(BaseStepImplementerTestCase):
                 results_file_name=results_file_name,
                 work_dir_path=work_dir_path,
             )
-            
+
             result = step_implementer._run_step()
 
             expected_step_result = StepResult(step_name='package', sub_step_name='Maven', sub_step_implementer_name='Maven')
@@ -216,7 +217,7 @@ class TestStepImplementerMavenPackageBase(BaseStepImplementerTestCase):
             pom_file_path = os.path.join(temp_dir.path, 'pom.xml')
 
             step_config = {'pom-file': pom_file_path}
-            
+
             step_implementer = self.create_step_implementer(
                 step_config=step_config,
                 step_name='package',
@@ -252,7 +253,7 @@ class TestStepImplementerMavenPackageBase(BaseStepImplementerTestCase):
             pom_file_path = os.path.join(temp_dir.path, 'pom.xml')
 
             step_config = {'pom-file': pom_file_path}
-            
+
             artifact_file_name = f'{artifact_id}-{version}.{package}'
 
             step_implementer = self.create_step_implementer(
@@ -265,14 +266,14 @@ class TestStepImplementerMavenPackageBase(BaseStepImplementerTestCase):
             )
 
             mvn_mock.side_effect = TestStepImplementerMavenPackageBase.create_mvn_side_effect(
-                pom_file_path, 
-                'target', 
+                pom_file_path,
+                'target',
                 [
                     f'{artifact_id}-{version}.war',
                     artifact_file_name
                 ]
             )
-            
+
             result = step_implementer._run_step()
 
             expected_step_result = StepResult(step_name='package', sub_step_name='Maven', sub_step_implementer_name='Maven')
@@ -299,7 +300,7 @@ class TestStepImplementerMavenPackageBase(BaseStepImplementerTestCase):
             pom_file_path = os.path.join(temp_dir.path, 'pom.xml')
 
             step_config = {'pom-file': pom_file_path}
-            
+
             artifact_file_name = f'{artifact_id}-{version}.{package}'
 
             step_implementer = self.create_step_implementer(
@@ -312,11 +313,11 @@ class TestStepImplementerMavenPackageBase(BaseStepImplementerTestCase):
             )
 
             mvn_mock.side_effect = TestStepImplementerMavenPackageBase.create_mvn_side_effect(
-                pom_file_path, 
-                'target', 
+                pom_file_path,
+                'target',
                 [artifact_file_name]
             )
-            
+
             result = step_implementer._run_step()
 
             expected_step_result = StepResult(step_name='package', sub_step_name='Maven', sub_step_implementer_name='Maven')
