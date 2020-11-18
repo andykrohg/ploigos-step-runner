@@ -623,7 +623,7 @@ class StepImplementer(ABC):  # pylint: disable=too-many-instance-attributes
     def get_result_value(self, artifact_name, step_name=None, sub_step_name=None):
         """
         Get the value for the named artifact.
-        If step_name is provide, search the artifacts step_name only
+        If step_name is provided, search the artifacts step_name only
         If step_name and sub_step_name,  search the artifacts step_name/sub_step only
         Otherwise, search for the FIRST occurrence of the artifact
         """
