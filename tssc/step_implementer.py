@@ -26,6 +26,7 @@ class DefaultSteps:  # pylint: disable=too-few-public-methods
     PUSH_ARTIFACTS = 'push-artifacts'
     CREATE_CONTAINER_IMAGE = 'create-container-image'
     PUSH_CONTAINER_IMAGE = 'push-container-image'
+    SIGN_CONTAINER_IMAGE = 'sign-container-image'
     CONTAINER_IMAGE_UNIT_TEST = 'container-image-unit-test'
     CONTAINER_IMAGE_STATIC_COMPLIANCE_SCAN = 'container-image-static-compliance-scan'
     CONTAINER_IMAGE_STATIC_VULNERABILITY_SCAN = 'container-image-static-vulnerability-scan'
@@ -512,6 +513,13 @@ class StepImplementer(ABC):  # pylint: disable=too-many-instance-attributes
                 break
 
         return result
+
+    def create_working_dir_sub_dir(self, sub_dir_relative_path):
+        """
+        """
+        file_path = os.path.join(self.work_dir_path_step, sub_dir_relative_path)
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        return file_path
 
     def write_working_file(self, filename, contents=None):
         """
