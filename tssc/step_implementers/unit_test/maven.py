@@ -131,7 +131,7 @@ class Maven(StepImplementer):
         maven_mirrors = ConfigValue.convert_leaves_to_values(
             self.get_config_value('maven-mirrors')
         )
-        return generate_maven_settings(self.get_working_dir(),
+        return generate_maven_settings(self.work_dir_path,
                                        maven_servers,
                                        maven_repositories,
                                        maven_mirrors)
@@ -144,13 +144,6 @@ class Maven(StepImplementer):
         step_result
             Object with results of running this step.
         """
-
-        """
-                    step_result.success = False
-            step_result.message = 'Given directory (repo_root) is not a Git repository'
-            return step_result
-            """
-
         step_result = StepResult.from_step_implementer(self)
 
         pom_file = self.get_config_value('pom-file')
@@ -196,40 +189,30 @@ class Maven(StepImplementer):
                 _err=sys.stderr
             )
         except sh.ErrorReturnCode as error:
-            step_result.success = False
-            step_result.message = "Error invoking mvn: {error}"
-            return step_result
+            raise RuntimeError(f'Error invoking mvn: {error}') from error
 
         test_results_output_path = test_results_dir
 
         if not os.path.isdir(test_results_dir) or \
             len(os.listdir(test_results_dir)) == 0:
             if fail_on_no_tests is not True:
-                results = {
-                    'result': {
-                        'success': True,
-                        'message': 'unit test step run successfully, but no tests were found'
-                    },
-                    'report-artifacts': [],
-                    'options': {
-                        'pom-path': pom_file,
-                        'fail-on-no-tests': False
-                    }
-                }
+                step_result.message = 'unit test step run successfully, but no tests were found'
             else:# pragma: no cover
                 # Added 'no cover' to bypass missing unit-test step coverage error
                 # that is covered by the following unit test:
                 #   test_unit_test_run_attempt_fails_fail_on_no_tests_flag_true
-                raise RuntimeError('Error: No unit tests defined')
+                step_result.message = 'Error: No unit tests defined'
+                step_result.success = False
+                return step_result
         else:
-            step_result.add_artifact(
-                name='pom-path',
-                value=pom_file
-            )
             step_result.add_artifact(
                 name='maven unit test results generated using junit',
                 value=f'file://{test_results_output_path}'
             )
 
-        return step_result
+        step_result.add_artifact(
+            name='pom-path',
+            value=pom_file
+        )
 
+        return step_result

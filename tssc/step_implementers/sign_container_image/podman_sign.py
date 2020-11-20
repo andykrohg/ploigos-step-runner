@@ -105,6 +105,7 @@ class PodmanSign(StepImplementer):
         if container_image_tag is None:
             step_result.success = False
             step_result.message = "Missing container-image-tag"
+            return step_result
 
         image_signatures_directory = self.create_working_dir_sub_dir(
             sub_dir_relative_path='image-signature'
