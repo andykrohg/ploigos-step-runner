@@ -518,7 +518,7 @@ class StepImplementer(ABC):  # pylint: disable=too-many-instance-attributes
         """
         """
         file_path = os.path.join(self.work_dir_path_step, sub_dir_relative_path)
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        os.makedirs(file_path, exist_ok=True)
         return file_path
 
     def write_working_file(self, filename, contents=None):

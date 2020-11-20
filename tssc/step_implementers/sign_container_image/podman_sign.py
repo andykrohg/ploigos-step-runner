@@ -41,7 +41,7 @@ import sys
 from io import StringIO
 
 import sh
-from tssc import DefaultSteps, StepImplementer
+from tssc import StepImplementer
 from tssc.utils.io import create_sh_redirect_to_multiple_streams_fn_callback
 from tssc.step_result import StepResult
 
@@ -101,13 +101,10 @@ class PodmanSign(StepImplementer):
         )
 
         # get the uri to the image to sign
-        push_container_image_step_results = \
-            self.get_result_value(artifact_name=DefaultSteps.PUSH_CONTAINER_IMAGE)
-        assert push_container_image_step_results is not None and \
-               'container-image-tag' in push_container_image_step_results, \
-            "Expected key (container-image-tag) to be in step results from step" \
-            f" ({DefaultSteps.PUSH_CONTAINER_IMAGE}): {push_container_image_step_results}"
-        container_image_tag = push_container_image_step_results.get('container-image-tag')
+        container_image_tag = self.get_result_value(artifact_name='container-image-tag')
+        if container_image_tag is None:
+            step_result.success = False
+            step_result.message = "Missing container-image-tag"
 
         image_signatures_directory = self.create_working_dir_sub_dir(
             sub_dir_relative_path='image-signature'

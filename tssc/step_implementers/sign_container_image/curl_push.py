@@ -46,11 +46,9 @@ import hashlib
 import re
 import sys
 from io import StringIO
-from operator import itemgetter
 
 import sh
 from tssc import StepImplementer
-from tssc.step_implementer import DefaultSteps
 from tssc.utils.io import create_sh_redirect_to_multiple_streams_fn_callback
 from tssc.step_result import StepResult
 
@@ -100,7 +98,9 @@ class CurlPush(StepImplementer):
         step_result = StepResult.from_step_implementer(self)
 
         # extract configs
-        signature_server_url = self.get_config_value('container-image-signature-server-url')
+        signature_server_url = self.get_config_value(
+            'container-image-signature-server-url'
+        )
         signature_server_username = self.get_config_value(
             'container-image-signature-server-username'
         )
@@ -109,25 +109,22 @@ class CurlPush(StepImplementer):
         )
 
         # extract step results
-        previous_sign_container_image_step_results = self.get_result_value(
-            artifact_name=DefaultSteps.SIGN_CONTAINER_IMAGE
+        container_image_signature_file_path = self.get_result_value(
+            artifact_name='container-image-signature-file-path'
         )
-
-        message = CurlPush.__verify_previous_sign_container_image_step_results(
-            previous_sign_container_image_step_results,
-            ['container-image-signature-file-path', 'container-image-signature-name']
-        )
-        if message:
+        if container_image_signature_file_path is None:
             step_result.success = False
-            step_result.message = message
+            step_result.message = 'Missing container-image-signature-file-path'
             return step_result
 
-        container_image_signature_file_path, container_image_signature_name = itemgetter(
-            'container-image-signature-file-path',
-            'container-image-signature-name'
-        )(previous_sign_container_image_step_results)
+        container_image_signature_name = self.get_result_value(
+            artifact_name='container-image-signature-name'
+        )
+        if container_image_signature_name is None:
+            step_result.success = False
+            step_result.message = 'Missing container-image-signature-name'
+            return step_result
 
-        # upload
         container_image_signature_url, signature_file_md5, signature_file_sha1 = \
             CurlPush.__curl_file(
                 container_image_signature_file_path=container_image_signature_file_path,
@@ -147,18 +144,6 @@ class CurlPush(StepImplementer):
             name='container-image-signature-file-sha1', value=signature_file_sha1
         )
         return step_result
-
-    @staticmethod
-    def __verify_previous_sign_container_image_step_results(step_results, keys):
-        """Verifies that the given step results has the expected keys"""
-        if step_results is None:
-            return f"Missing step results from {DefaultSteps.SIGN_CONTAINER_IMAGE}"
-
-        for key in keys:
-            result = step_results.get(key)
-            if result is None:
-                return f"Missing {key} step results from {DefaultSteps.SIGN_CONTAINER_IMAGE}"
-        return None
 
     @staticmethod
     def __curl_file(
