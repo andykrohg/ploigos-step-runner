@@ -206,13 +206,16 @@ class Maven(StepImplementer):
                 return step_result
         else:
             step_result.add_artifact(
-                name='maven unit test results generated using junit',
-                value=f'file://{test_results_output_path}'
+                description='maven unit test results generated using junit',
+                name='surefire-reports',
+                value=f'file://{test_results_output_path}',
+                value_type='file'
             )
 
         step_result.add_artifact(
             name='pom-path',
-            value=pom_file
+            value=f'file://{pom_file}',
+            value_type='file'
         )
 
         return step_result

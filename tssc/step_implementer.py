@@ -200,7 +200,7 @@ class StepImplementer(ABC):  # pylint: disable=too-many-instance-attributes
             OS path to the results file for this step.
         """
         os.makedirs(self.__work_dir_path, exist_ok=True)
-        return self.__work_dir_path
+        return os.path.abspath(self.__work_dir_path)
 
     @property
     def work_dir_path_step(self):
