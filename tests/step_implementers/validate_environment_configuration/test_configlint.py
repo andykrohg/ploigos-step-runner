@@ -239,9 +239,12 @@ class TestStepImplementerConfiglint(BaseStepImplementerTestCase):
                 sub_step_implementer_name='Configlint'
             )
 
-            expected_step_result.add_artifact(name='configlint-results',
-                                              value=f'file://{work_dir_path}/validate-environment-configuration/configlint_results_file.txt')
-            expected_step_result.add_artifact(name='yml-path', value=f'file://{test_file_path}')
+            expected_step_result.add_artifact(name='configlint-result-set',
+                                              value=f'file://{work_dir_path}/validate-environment-configuration/configlint_results_file.txt',
+                                              value_type='file')
+            expected_step_result.add_artifact(name='yml-path',
+                                              value=f'file://{test_file_path}',
+                                              value_type='file')
             self.assertEqual(expected_step_result.get_step_result(), result.get_step_result())
 
     @patch('sh.config_lint', create=True)
@@ -290,10 +293,14 @@ class TestStepImplementerConfiglint(BaseStepImplementerTestCase):
             expected_step_result.success = False
             expected_step_result.message = 'Failed config-lint scan.'
             expected_step_result.add_artifact(
-                name='configlint-results',
-                value=f'file://{work_dir_path}/validate-environment-configuration/configlint_results_file.txt'
+                name='configlint-result-set',
+                value=f'file://{work_dir_path}/validate-environment-configuration/configlint_results_file.txt',
+                value_type='file'
             )
-            expected_step_result.add_artifact(name='yml-path', value=f'file://{file_to_validate_file_path}')
+            expected_step_result.add_artifact(
+                name='yml-path',
+                value=f'file://{file_to_validate_file_path}',
+                value_type='file')
             self.assertEqual(expected_step_result.get_step_result(), result.get_step_result())
 
     @patch('sh.config_lint', create=True)

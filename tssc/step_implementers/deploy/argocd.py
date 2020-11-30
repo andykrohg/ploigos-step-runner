@@ -183,9 +183,9 @@ class ArgoCD(StepImplementer):
         """
         super()._validate_runtime_step_config(runtime_step_config)  # pylint: disable=protected-access
 
-        assert ( \
-                    all(element in runtime_step_config for element in GIT_AUTHENTICATION_CONFIG) or \
-                    not any(element in runtime_step_config for element in GIT_AUTHENTICATION_CONFIG) \
+        assert (
+                    all(element in runtime_step_config for element in GIT_AUTHENTICATION_CONFIG) or
+                    not any(element in runtime_step_config for element in GIT_AUTHENTICATION_CONFIG)
             ), 'Either username or password is not set. Neither or both must be set.'
 
     def _run_step(self):  # pylint: disable=too-many-locals
