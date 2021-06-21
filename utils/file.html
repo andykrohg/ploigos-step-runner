@@ -296,7 +296,7 @@ def upload_file(file_path, destination_uri, username=None, password=None): # pyl
             opener = urllib.request.build_opener()
 
         with open(file_path, &#39;rb&#39;) as file:
-            request = urllib.request.Request(url=destination_uri, data=file.read(), method=&#39;PUT&#39;)
+            request = urllib.request.Request(url=destination_uri, data=file.read(), method=&#39;PUT&#39;, headers={&#39;Content-Type&#39;: &#39;application/zip, application/octet-stream&#39;})
 
             try:
                 result = opener.open(request)
@@ -733,7 +733,7 @@ If destination_uri does not start with /|file://|<a href="http://|https://">http
             opener = urllib.request.build_opener()
 
         with open(file_path, &#39;rb&#39;) as file:
-            request = urllib.request.Request(url=destination_uri, data=file.read(), method=&#39;PUT&#39;)
+            request = urllib.request.Request(url=destination_uri, data=file.read(), method=&#39;PUT&#39;, headers={&#39;Content-Type&#39;: &#39;application/zip, application/octet-stream&#39;})
 
             try:
                 result = opener.open(request)
