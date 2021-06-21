@@ -267,7 +267,7 @@ def upload_file(file_path, destination_uri, username=None, password=None): # pyl
             opener = urllib.request.build_opener()
 
         with open(file_path, 'rb') as file:
-            request = urllib.request.Request(url=destination_uri, data=file.read(), method='PUT')
+            request = urllib.request.Request(url=destination_uri, data=file.read(), method='PUT', headers={'Content-Type': 'application/zip, application/octet-stream'})
 
             try:
                 result = opener.open(request)
