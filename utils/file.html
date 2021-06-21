@@ -214,7 +214,7 @@ def get_file_hash(file_path):
         Object containing the dictionary results of this step.
     &#34;&#34;&#34;
     sha256_hash = hashlib.sha256()
-    with open(file_path, &#34;r&#34;) as the_file:
+    with open(file_path, &#34;rb&#34;) as the_file:
         # Read and update hash string value in blocks of 4K
         for byte_block in iter(lambda: the_file.read(4096), b&#34;&#34;):
             sha256_hash.update(byte_block)
@@ -295,7 +295,7 @@ def upload_file(file_path, destination_uri, username=None, password=None): # pyl
         else:
             opener = urllib.request.build_opener()
 
-        with open(file_path, &#39;rb&#39;) as file:
+        with open(file_path, &#39;r&#39;) as file:
             request = urllib.request.Request(url=destination_uri, data=file.read(), method=&#39;PUT&#39;)
 
             try:
@@ -536,7 +536,7 @@ and decompress if necessary.</dd>
         Object containing the dictionary results of this step.
     &#34;&#34;&#34;
     sha256_hash = hashlib.sha256()
-    with open(file_path, &#34;r&#34;) as the_file:
+    with open(file_path, &#34;rb&#34;) as the_file:
         # Read and update hash string value in blocks of 4K
         for byte_block in iter(lambda: the_file.read(4096), b&#34;&#34;):
             sha256_hash.update(byte_block)
@@ -732,7 +732,7 @@ If destination_uri does not start with /|file://|<a href="http://|https://">http
         else:
             opener = urllib.request.build_opener()
 
-        with open(file_path, &#39;rb&#39;) as file:
+        with open(file_path, &#39;r&#39;) as file:
             request = urllib.request.Request(url=destination_uri, data=file.read(), method=&#39;PUT&#39;)
 
             try:
