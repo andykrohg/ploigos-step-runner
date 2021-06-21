@@ -185,7 +185,7 @@ def get_file_hash(file_path):
         Object containing the dictionary results of this step.
     """
     sha256_hash = hashlib.sha256()
-    with open(file_path, "r") as the_file:
+    with open(file_path, "rb") as the_file:
         # Read and update hash string value in blocks of 4K
         for byte_block in iter(lambda: the_file.read(4096), b""):
             sha256_hash.update(byte_block)
@@ -266,7 +266,7 @@ def upload_file(file_path, destination_uri, username=None, password=None): # pyl
         else:
             opener = urllib.request.build_opener()
 
-        with open(file_path, 'rb') as file:
+        with open(file_path, 'r') as file:
             request = urllib.request.Request(url=destination_uri, data=file.read(), method='PUT')
 
             try:
