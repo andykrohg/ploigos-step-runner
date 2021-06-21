@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.9.1" />
-<title>tssc.step_implementers.sign_container_image.podman_sign API documentation</title>
-<meta name="description" content="StepImplementer for the sign-container-image step using Podman to sign an image …" />
+<meta name="generator" content="pdoc 0.9.2" />
+<title>ploigos_step_runner.step_implementers.sign_container_image.podman_sign API documentation</title>
+<meta name="description" content="`StepImplementer` for the `sign-container-image` step using Podman to create an image signature …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -19,14 +19,18 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tssc.step_implementers.sign_container_image.podman_sign</code></h1>
+<h1 class="title">Module <code>ploigos_step_runner.step_implementers.sign_container_image.podman_sign</code></h1>
 </header>
 <section id="section-intro">
-<p>StepImplementer for the sign-container-image step using Podman to sign an image.</p>
+<p><code>StepImplementer</code> for the <code>sign-container-image</code> step using Podman to create an image signature.</p>
 <h2 id="step-configuration">Step Configuration</h2>
 <p>Step configuration expected as input to this step.
-Could come from either configuration file or
-from runtime configuration.</p>
+Could come from:</p>
+<ul>
+<li>static configuration</li>
+<li>runtime configuration</li>
+<li>previous step results</li>
+</ul>
 <table>
 <thead>
 <tr>
@@ -38,64 +42,95 @@ from runtime configuration.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>container-image-signer-pgp-private-key</code></td>
-<td>True</td>
+<td><code>signer-pgp-private-key</code></td>
+<td>Yes</td>
 <td></td>
-<td>PGP Private Key used to
-sign the image</td>
+<td>PGP Private Key used to sign the image</td>
 </tr>
-</tbody>
-</table>
-<h2 id="expected-previous-step-results">Expected Previous Step Results</h2>
-<p>Results expected from previous steps that this step requires.</p>
-<table>
-<thead>
 <tr>
-<th>Step Name</th>
-<th>Result Key</th>
-<th>Description</th>
+<td><code>container-image-signer-pgp-private-key</code> (deprecated)</td>
+<td>Yes</td>
+<td></td>
+<td>PGP Private Key used to sign the image</td>
 </tr>
-</thead>
-<tbody>
 <tr>
 <td><code>container-image-tag</code></td>
-<td><code>push-container-image</code></td>
-<td>Tag of the container image</td>
+<td>Yes</td>
+<td></td>
+<td>Tag of the container image to sign</td>
+</tr>
+<tr>
+<td><code>container-image-signature-destination-url</code></td>
+<td>No</td>
+<td></td>
+<td>URL to upload the container image signature to.
+The container image signature name will be appended
+to form the container image signature URI.
+<br /><br />
+Must start with <code>/</code> or <code>file://</code> to upload
+to local file path.
+<br /><br />
+Or must start with <code>http://</code> or <code>https://</code> to
+upload via a <code>PUT</code> to a remote location.</td>
+</tr>
+<tr>
+<td><code>container-image-signature-destination-username</code></td>
+<td>No</td>
+<td></td>
+<td>Username to use when doing upload via http(s).</td>
+</tr>
+<tr>
+<td><code>container-image-signature-destination-password</code></td>
+<td>No</td>
+<td></td>
+<td>Password to use when doing upload via http(s).</td>
+</tr>
+<tr>
+<td>``</td>
+<td></td>
+<td></td>
+<td></td>
 </tr>
 </tbody>
 </table>
-<h2 id="results">Results</h2>
-<p>Results output by this step.</p>
+<h2 id="result-artifacts">Result Artifacts</h2>
+<p>Results artifacts output by this step.</p>
 <table>
 <thead>
 <tr>
-<th>Result Key</th>
+<th>Result Artifact Key</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>container-image-signature-private-key-fingerprint</code></td>
-<td>Fingerprint for the private key for
-image signing</td>
+<td><code>container-image-signature-signer-private-key-fingerprint</code></td>
+<td>Fingerprint for the private key used to sign
+the container image.</td>
 </tr>
 <tr>
 <td><code>container-image-signature-file-path</code></td>
-<td>File path where signature is located
-eg) /tmp/jkeam/hello-node@
-sha256=2cbdb73c9177e63
-e85d267f738e99e368db3f
-806eab4c541f5c6b719e69
-f1a2b/signature-1</td>
+<td>File path to created image signature.</td>
 </tr>
 <tr>
 <td><code>container-image-signature-name</code></td>
-<td>Fully qualified name of the name
-including organization, repo, and hash
-eg) jkeam/hello-node@sha256=
+<td>Fully qualified name of the
+name of the image signature,
+including: organization, repo,
+and hash. <br/>
+ex: user/hello-node@sha256=
 2cbdb73c9177e63e85d267f738e9
 9e368db3f806eab4c541f5c6b719
 e69f1a2b/signature-1</td>
+</tr>
+<tr>
+<td><code>container-image-signature-uri</code></td>
+<td>URI of the uploaded container image signature.</td>
+</tr>
+<tr>
+<td><code>container-image-signature-upload-results</code></td>
+<td>Results of uploading the container image
+signature to the given destination.</td>
 </tr>
 </tbody>
 </table>
@@ -103,197 +138,203 @@ e69f1a2b/signature-1</td>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">&#34;&#34;&#34;StepImplementer for the sign-container-image step using Podman to sign an image.
-
+<pre><code class="python">&#34;&#34;&#34;`StepImplementer` for the `sign-container-image` step using Podman to create an image signature.
 
 Step Configuration
 ------------------
 Step configuration expected as input to this step.
-Could come from either configuration file or
-from runtime configuration.
+Could come from:
 
-| Configuration Key                        | Required? | Default  | Description
-|------------------------------------------|-----------|----------|-------------
-| `container-image-signer-pgp-private-key` | True      |          | PGP Private Key used to \
-                                                                    sign the image
+  * static configuration
+  * runtime configuration
+  * previous step results
 
+Configuration Key      | Required? | Default | Description
+-----------------------|-----------|---------|-------------
+`signer-pgp-private-key` \
+                       | Yes       |         | PGP Private Key used to sign the image
+`container-image-signer-pgp-private-key` (deprecated)\
+                       | Yes       |         | PGP Private Key used to sign the image
+`container-image-tag`  | Yes       |         | Tag of the container image to sign
+`container-image-signature-destination-url` \
+                       | No        |         | URL to upload the container image signature to.\
+                                               The container image signature name will be appended \
+                                               to form the container image signature URI. \
+                                               &lt;br /&gt;&lt;br /&gt;\
+                                               Must start with `/` or `file://` to upload \
+                                               to local file path. \
+                                               &lt;br /&gt;&lt;br /&gt;\
+                                               Or must start with `http://` or `https://` to \
+                                               upload via a `PUT` to a remote location.
+`container-image-signature-destination-username` \
+                       | No        |         | Username to use when doing upload via http(s).
+`container-image-signature-destination-password` \
+                       | No        |         | Password to use when doing upload via http(s).
+``
 
-Expected Previous Step Results
-------------------------------
-Results expected from previous steps that this step requires.
+Result Artifacts
+----------------
+Results artifacts output by this step.
 
-| Step Name             | Result Key             | Description
-|-----------------------|------------------------|-------------------------------
-| `container-image-tag` | `push-container-image` | Tag of the container image
+Result Artifact Key                        | Description
+-------------------------------------------|------------
+`container-image-signature-signer-private-key-fingerprint` \
+                                           | Fingerprint for the private key used to sign \
+                                             the container image.
+`container-image-signature-file-path`      | File path to created image signature.
+`container-image-signature-name`           | Fully qualified name of the \
+                                             name of the image signature, \
+                                             including: organization, repo, \
+                                             and hash. &lt;br/&gt;\
+                                             ex: user/hello-node@sha256=\
+                                             2cbdb73c9177e63e85d267f738e9\
+                                             9e368db3f806eab4c541f5c6b719\
+                                             e69f1a2b/signature-1
+`container-image-signature-uri`            | URI of the uploaded container image signature.
+`container-image-signature-upload-results` | Results of uploading the container image \
+                                             signature to the given destination.
 
-
-Results
--------
-Results output by this step.
-
-| Result Key                                          | Description
-|-----------------------------------------------------|------------
-| `container-image-signature-private-key-fingerprint` | Fingerprint for the private key for \
-                                                        image signing
-| `container-image-signature-file-path`               | File path where signature is located \
-                                                        eg) /tmp/jkeam/hello-node@\
-                                                            sha256=2cbdb73c9177e63\
-                                                            e85d267f738e99e368db3f\
-                                                            806eab4c541f5c6b719e69\
-                                                            f1a2b/signature-1
-| `container-image-signature-name`                    | Fully qualified name of the name \
-                                                        including organization, repo, and hash \
-                                                        eg) jkeam/hello-node@sha256=\
-                                                            2cbdb73c9177e63e85d267f738e9\
-                                                            9e368db3f806eab4c541f5c6b719\
-                                                            e69f1a2b/signature-1
 &#34;&#34;&#34;
-
 import glob
 import os
-import re
 import sys
-from io import StringIO
 
 import sh
-from tssc import DefaultSteps, StepImplementer
-from tssc.utils.io import create_sh_redirect_to_multiple_streams_fn_callback
+from ploigos_step_runner import StepImplementer, StepResult
+from ploigos_step_runner.exceptions import StepRunnerException
+from ploigos_step_runner.utils.file import upload_file
+from ploigos_step_runner.utils.pgp import import_pgp_key
 
 DEFAULT_CONFIG = {
 }
 
-REQUIRED_CONFIG_KEYS = [
-    &#39;container-image-signer-pgp-private-key&#39;
+REQUIRED_CONFIG_OR_PREVIOUS_STEP_RESULT_ARTIFACT_KEYS = [
+    # signer-pgp-private-key - new key name
+    # container-image-signer-pgp-private-key - old key name
+    [&#39;signer-pgp-private-key&#39;, &#39;container-image-signer-pgp-private-key&#39;],
+    &#39;container-image-tag&#39;
 ]
 
 class PodmanSign(StepImplementer):
-    &#34;&#34;&#34;StepImplementer for the sign-container-image step using Podman.
+    &#34;&#34;&#34;`StepImplementer` for the `sign-container-image` step using Podman to create
+    an image signature.
     &#34;&#34;&#34;
-
-    # Example input to match on:
-    #   sec:-:3072:1:CF4AC14A3D109637:1601483310:1664555310::-:::scESC::::::23::0:
-    #   fpr:::::::::DD7208BA0A6359F65B906B29CF4AC14A3D109637:
-    #   grp:::::::::A483EE079EC1D58A954E3AAF3BCC61EDD7596BF0:
-    GPG_IMPORT_FINGER_PRINT_REGEX = re.compile(r&#34;^fpr:+([^:]+):$&#34;, re.MULTILINE)
 
     @staticmethod
     def step_implementer_config_defaults():
-        &#34;&#34;&#34;
-        Getter for the StepImplementer&#39;s configuration defaults.
-
-        Notes
-        -----
-        These are the lowest precedence configuration values.
+        &#34;&#34;&#34;Getter for the StepImplementer&#39;s configuration defaults.
 
         Returns
         -------
         dict
             Default values to use for step configuration values.
+
+        Notes
+        -----
+        These are the lowest precedence configuration values.
         &#34;&#34;&#34;
         return DEFAULT_CONFIG
 
     @staticmethod
-    def required_runtime_step_config_keys():
-        &#34;&#34;&#34;
-        Getter for step configuration keys that are required before running the step.
+    def _required_config_or_result_keys():
+        &#34;&#34;&#34;Getter for step configuration or previous step result artifacts that are required before
+        running this step.
 
         See Also
         --------
-        _validate_runtime_step_config
+        _validate_required_config_or_previous_step_result_artifact_keys
 
         Returns
         -------
         array_list
-            Array of configuration keys that are required before running the step.
+            Array of configuration keys or previous step result artifacts
+            that are required before running the step.
         &#34;&#34;&#34;
-        return REQUIRED_CONFIG_KEYS
+        return REQUIRED_CONFIG_OR_PREVIOUS_STEP_RESULT_ARTIFACT_KEYS
 
     def _run_step(self):
+        &#34;&#34;&#34;Runs the step implemented by this StepImplementer.
+
+        Returns
+        -------
+        StepResult
+            Object containing the dictionary results of this step.
+        &#34;&#34;&#34;
+        step_result = StepResult.from_step_implementer(self)
+
         # get the pgp private key to sign the image with
-        image_signer_pgp_private_key = self.get_config_value(
-            &#39;container-image-signer-pgp-private-key&#39;
+        signer_pgp_private_key = self.get_value(
+            [&#39;signer-pgp-private-key&#39;, &#39;container-image-signer-pgp-private-key&#39;]
         )
 
         # get the uri to the image to sign
-        push_container_image_step_results = self.get_step_results(DefaultSteps.PUSH_CONTAINER_IMAGE)
-        assert push_container_image_step_results is not None and \
-            &#39;container-image-tag&#39; in push_container_image_step_results, \
-            &#34;Expected key (container-image-tag) to be in step results from step&#34; \
-            f&#34; ({DefaultSteps.PUSH_CONTAINER_IMAGE}): {push_container_image_step_results}&#34;
-        container_image_tag = push_container_image_step_results.get(&#39;container-image-tag&#39;)
+        container_image_tag = self.get_value(&#39;container-image-tag&#39;)
 
         image_signatures_directory = self.create_working_dir_sub_dir(
             sub_dir_relative_path=&#39;image-signature&#39;
         )
 
-        # import the PGP key and get the finger print
-        image_signer_pgp_private_key_fingerprint = PodmanSign.__import_pgp_key(
-            pgp_private_key=image_signer_pgp_private_key
-        )
-
-        # sign the image
-        signature_file_path = PodmanSign.__sign_image(
-            pgp_private_key_fingerprint=image_signer_pgp_private_key_fingerprint,
-            image_signatures_directory=image_signatures_directory,
-            container_image_tag=container_image_tag
-        )
-        signature_name = os.path.relpath(signature_file_path, image_signatures_directory)
-
-        return {
-            &#39;container-image-signature-private-key-fingerprint&#39;: \
-                image_signer_pgp_private_key_fingerprint,
-            &#39;container-image-signature-file-path&#39;: signature_file_path,
-            &#39;container-image-signature-name&#39;: signature_name
-        }
-
-    @staticmethod
-    def __import_pgp_key(
-        pgp_private_key
-    ):
-        print(&#34;Import PGP private key to sign container image(s) with&#34;)
         try:
-            # import the key
-
-            # NOTE: GPG is weird in that it sends &#34;none error&#34; output to stderr even on success...
-            #       so merge the stderr into stdout
-            gpg_import_stdout_result = StringIO()
-            gpg_import_stdout_callback = create_sh_redirect_to_multiple_streams_fn_callback([
-                sys.stdout,
-                gpg_import_stdout_result
-            ])
-            sh.gpg( # pylint: disable=no-member
-                &#39;--import&#39;,
-                &#39;--fingerprint&#39;,
-                &#39;--with-colons&#39;,
-                &#39;--import-options=import-show&#39;,
-                _in=pgp_private_key,
-                _out=gpg_import_stdout_callback,
-                _err_to_out=True,
-                _tee=&#39;out&#39;
+            # import the PGP key and get the finger print
+            signer_pgp_private_key_fingerprint = import_pgp_key(
+                pgp_private_key=signer_pgp_private_key
+            )
+            step_result.add_artifact(
+                name=&#39;container-image-signature-signer-private-key-fingerprint&#39;,
+                value=signer_pgp_private_key_fingerprint
             )
 
-            # get the fingerprint of the imported key
-            #
-            # NOTE: if more then one match just using first one...
-            gpg_imported_pgp_private_key_fingerprints = re.findall(
-                PodmanSign.GPG_IMPORT_FINGER_PRINT_REGEX,
-                gpg_import_stdout_result.getvalue()
+            # sign the image
+            signature_file_path = PodmanSign.__sign_image(
+                pgp_private_key_fingerprint=signer_pgp_private_key_fingerprint,
+                image_signatures_directory=image_signatures_directory,
+                container_image_tag=container_image_tag
             )
-            if len(gpg_imported_pgp_private_key_fingerprints) &lt; 1:
-                raise RuntimeError(
-                    &#34;Unexpected error getting PGP fingerprint for PGP key&#34;
-                    &#34; to sign container image(s) with. See stdout and stderr for more info.&#34;
+            step_result.add_artifact(
+                name=&#39;container-image-signature-file-path&#39;,
+                value=signature_file_path,
+            )
+            signature_name = os.path.relpath(signature_file_path, image_signatures_directory)
+            step_result.add_artifact(
+                name=&#39;container-image-signature-name&#39;,
+                value=signature_name
+            )
+        except (RuntimeError, StepRunnerException) as error:
+            step_result.success = False
+            step_result.message = str(error)
+
+
+        # upload the image signature
+        container_image_signature_destination_url = self.get_value(
+            &#39;container-image-signature-destination-url&#39;
+        )
+        if container_image_signature_destination_url:
+            container_image_signature_destination_uri = \
+                f&#34;{container_image_signature_destination_url}/{signature_name}&#34;
+            step_result.add_artifact(
+                name=&#39;container-image-signature-uri&#39;,
+                description=&#39;URI of the uploaded container image signature&#39;,
+                value=container_image_signature_destination_uri
+            )
+
+            try:
+                upload_result = upload_file(
+                    file_path=signature_file_path,
+                    destination_uri=container_image_signature_destination_uri,
+                    username=self.get_value(&#39;container-image-signature-destination-username&#39;),
+                    password=self.get_value(&#39;container-image-signature-destination-password&#39;)
                 )
-            pgp_private_key_fingerprint = gpg_imported_pgp_private_key_fingerprints[0]
+                step_result.add_artifact(
+                    name=&#39;container-image-signature-upload-results&#39;,
+                    description=&#39;Results of uploading the container image signature&#39; \
+                                &#39; to the given destination.&#39;,
+                    value=upload_result
+                )
+            except RuntimeError as error:
+                step_result.success = False
+                step_result.message = str(error)
 
-            print(
-                &#34;Imported PGP private key to sign container image(s) with: &#34;
-                f&#34;fingerprint=&#39;{pgp_private_key_fingerprint}&#39;&#34;
-            )
-        except sh.ErrorReturnCode as error:
-            raise RuntimeError(f&#34;Unexpected error importing pgp private key: {error}&#34;) from error
-
-        return pgp_private_key_fingerprint
+        return step_result
 
     @staticmethod
     def __sign_image(
@@ -319,8 +360,8 @@ class PodmanSign(StepImplementer):
                 _tee=&#39;out&#39;
             )
         except sh.ErrorReturnCode as error:
-            raise RuntimeError(
-                f&#34;Unexpected error signing image ({container_image_tag}): {error}&#34;
+            raise StepRunnerException(
+                f&#34;Error signing image ({container_image_tag}): {error}&#34;
             ) from error
 
         # get image signature file path
@@ -330,7 +371,7 @@ class PodmanSign(StepImplementer):
         )
 
         if len(signature_file_paths) != 1:
-            raise RuntimeError(
+            raise StepRunnerException(
                 f&#34;Unexpected number of signature files, expected 1: {signature_file_paths}&#34;
             )
 
@@ -352,144 +393,137 @@ class PodmanSign(StepImplementer):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="tssc.step_implementers.sign_container_image.podman_sign.PodmanSign"><code class="flex name class">
+<dt id="ploigos_step_runner.step_implementers.sign_container_image.podman_sign.PodmanSign"><code class="flex name class">
 <span>class <span class="ident">PodmanSign</span></span>
-<span>(</span><span>results_dir_path, results_file_name, work_dir_path, config, environment=None)</span>
+<span>(</span><span>workflow_result, parent_work_dir_path, config, environment=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>StepImplementer for the sign-container-image step using Podman.</p></div>
+<div class="desc"><p><code>StepImplementer</code> for the <code>sign-container-image</code> step using Podman to create
+an image signature.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class PodmanSign(StepImplementer):
-    &#34;&#34;&#34;StepImplementer for the sign-container-image step using Podman.
+    &#34;&#34;&#34;`StepImplementer` for the `sign-container-image` step using Podman to create
+    an image signature.
     &#34;&#34;&#34;
-
-    # Example input to match on:
-    #   sec:-:3072:1:CF4AC14A3D109637:1601483310:1664555310::-:::scESC::::::23::0:
-    #   fpr:::::::::DD7208BA0A6359F65B906B29CF4AC14A3D109637:
-    #   grp:::::::::A483EE079EC1D58A954E3AAF3BCC61EDD7596BF0:
-    GPG_IMPORT_FINGER_PRINT_REGEX = re.compile(r&#34;^fpr:+([^:]+):$&#34;, re.MULTILINE)
 
     @staticmethod
     def step_implementer_config_defaults():
-        &#34;&#34;&#34;
-        Getter for the StepImplementer&#39;s configuration defaults.
-
-        Notes
-        -----
-        These are the lowest precedence configuration values.
+        &#34;&#34;&#34;Getter for the StepImplementer&#39;s configuration defaults.
 
         Returns
         -------
         dict
             Default values to use for step configuration values.
+
+        Notes
+        -----
+        These are the lowest precedence configuration values.
         &#34;&#34;&#34;
         return DEFAULT_CONFIG
 
     @staticmethod
-    def required_runtime_step_config_keys():
-        &#34;&#34;&#34;
-        Getter for step configuration keys that are required before running the step.
+    def _required_config_or_result_keys():
+        &#34;&#34;&#34;Getter for step configuration or previous step result artifacts that are required before
+        running this step.
 
         See Also
         --------
-        _validate_runtime_step_config
+        _validate_required_config_or_previous_step_result_artifact_keys
 
         Returns
         -------
         array_list
-            Array of configuration keys that are required before running the step.
+            Array of configuration keys or previous step result artifacts
+            that are required before running the step.
         &#34;&#34;&#34;
-        return REQUIRED_CONFIG_KEYS
+        return REQUIRED_CONFIG_OR_PREVIOUS_STEP_RESULT_ARTIFACT_KEYS
 
     def _run_step(self):
+        &#34;&#34;&#34;Runs the step implemented by this StepImplementer.
+
+        Returns
+        -------
+        StepResult
+            Object containing the dictionary results of this step.
+        &#34;&#34;&#34;
+        step_result = StepResult.from_step_implementer(self)
+
         # get the pgp private key to sign the image with
-        image_signer_pgp_private_key = self.get_config_value(
-            &#39;container-image-signer-pgp-private-key&#39;
+        signer_pgp_private_key = self.get_value(
+            [&#39;signer-pgp-private-key&#39;, &#39;container-image-signer-pgp-private-key&#39;]
         )
 
         # get the uri to the image to sign
-        push_container_image_step_results = self.get_step_results(DefaultSteps.PUSH_CONTAINER_IMAGE)
-        assert push_container_image_step_results is not None and \
-            &#39;container-image-tag&#39; in push_container_image_step_results, \
-            &#34;Expected key (container-image-tag) to be in step results from step&#34; \
-            f&#34; ({DefaultSteps.PUSH_CONTAINER_IMAGE}): {push_container_image_step_results}&#34;
-        container_image_tag = push_container_image_step_results.get(&#39;container-image-tag&#39;)
+        container_image_tag = self.get_value(&#39;container-image-tag&#39;)
 
         image_signatures_directory = self.create_working_dir_sub_dir(
             sub_dir_relative_path=&#39;image-signature&#39;
         )
 
-        # import the PGP key and get the finger print
-        image_signer_pgp_private_key_fingerprint = PodmanSign.__import_pgp_key(
-            pgp_private_key=image_signer_pgp_private_key
-        )
-
-        # sign the image
-        signature_file_path = PodmanSign.__sign_image(
-            pgp_private_key_fingerprint=image_signer_pgp_private_key_fingerprint,
-            image_signatures_directory=image_signatures_directory,
-            container_image_tag=container_image_tag
-        )
-        signature_name = os.path.relpath(signature_file_path, image_signatures_directory)
-
-        return {
-            &#39;container-image-signature-private-key-fingerprint&#39;: \
-                image_signer_pgp_private_key_fingerprint,
-            &#39;container-image-signature-file-path&#39;: signature_file_path,
-            &#39;container-image-signature-name&#39;: signature_name
-        }
-
-    @staticmethod
-    def __import_pgp_key(
-        pgp_private_key
-    ):
-        print(&#34;Import PGP private key to sign container image(s) with&#34;)
         try:
-            # import the key
-
-            # NOTE: GPG is weird in that it sends &#34;none error&#34; output to stderr even on success...
-            #       so merge the stderr into stdout
-            gpg_import_stdout_result = StringIO()
-            gpg_import_stdout_callback = create_sh_redirect_to_multiple_streams_fn_callback([
-                sys.stdout,
-                gpg_import_stdout_result
-            ])
-            sh.gpg( # pylint: disable=no-member
-                &#39;--import&#39;,
-                &#39;--fingerprint&#39;,
-                &#39;--with-colons&#39;,
-                &#39;--import-options=import-show&#39;,
-                _in=pgp_private_key,
-                _out=gpg_import_stdout_callback,
-                _err_to_out=True,
-                _tee=&#39;out&#39;
+            # import the PGP key and get the finger print
+            signer_pgp_private_key_fingerprint = import_pgp_key(
+                pgp_private_key=signer_pgp_private_key
+            )
+            step_result.add_artifact(
+                name=&#39;container-image-signature-signer-private-key-fingerprint&#39;,
+                value=signer_pgp_private_key_fingerprint
             )
 
-            # get the fingerprint of the imported key
-            #
-            # NOTE: if more then one match just using first one...
-            gpg_imported_pgp_private_key_fingerprints = re.findall(
-                PodmanSign.GPG_IMPORT_FINGER_PRINT_REGEX,
-                gpg_import_stdout_result.getvalue()
+            # sign the image
+            signature_file_path = PodmanSign.__sign_image(
+                pgp_private_key_fingerprint=signer_pgp_private_key_fingerprint,
+                image_signatures_directory=image_signatures_directory,
+                container_image_tag=container_image_tag
             )
-            if len(gpg_imported_pgp_private_key_fingerprints) &lt; 1:
-                raise RuntimeError(
-                    &#34;Unexpected error getting PGP fingerprint for PGP key&#34;
-                    &#34; to sign container image(s) with. See stdout and stderr for more info.&#34;
+            step_result.add_artifact(
+                name=&#39;container-image-signature-file-path&#39;,
+                value=signature_file_path,
+            )
+            signature_name = os.path.relpath(signature_file_path, image_signatures_directory)
+            step_result.add_artifact(
+                name=&#39;container-image-signature-name&#39;,
+                value=signature_name
+            )
+        except (RuntimeError, StepRunnerException) as error:
+            step_result.success = False
+            step_result.message = str(error)
+
+
+        # upload the image signature
+        container_image_signature_destination_url = self.get_value(
+            &#39;container-image-signature-destination-url&#39;
+        )
+        if container_image_signature_destination_url:
+            container_image_signature_destination_uri = \
+                f&#34;{container_image_signature_destination_url}/{signature_name}&#34;
+            step_result.add_artifact(
+                name=&#39;container-image-signature-uri&#39;,
+                description=&#39;URI of the uploaded container image signature&#39;,
+                value=container_image_signature_destination_uri
+            )
+
+            try:
+                upload_result = upload_file(
+                    file_path=signature_file_path,
+                    destination_uri=container_image_signature_destination_uri,
+                    username=self.get_value(&#39;container-image-signature-destination-username&#39;),
+                    password=self.get_value(&#39;container-image-signature-destination-password&#39;)
                 )
-            pgp_private_key_fingerprint = gpg_imported_pgp_private_key_fingerprints[0]
+                step_result.add_artifact(
+                    name=&#39;container-image-signature-upload-results&#39;,
+                    description=&#39;Results of uploading the container image signature&#39; \
+                                &#39; to the given destination.&#39;,
+                    value=upload_result
+                )
+            except RuntimeError as error:
+                step_result.success = False
+                step_result.message = str(error)
 
-            print(
-                &#34;Imported PGP private key to sign container image(s) with: &#34;
-                f&#34;fingerprint=&#39;{pgp_private_key_fingerprint}&#39;&#34;
-            )
-        except sh.ErrorReturnCode as error:
-            raise RuntimeError(f&#34;Unexpected error importing pgp private key: {error}&#34;) from error
-
-        return pgp_private_key_fingerprint
+        return step_result
 
     @staticmethod
     def __sign_image(
@@ -515,8 +549,8 @@ class PodmanSign(StepImplementer):
                 _tee=&#39;out&#39;
             )
         except sh.ErrorReturnCode as error:
-            raise RuntimeError(
-                f&#34;Unexpected error signing image ({container_image_tag}): {error}&#34;
+            raise StepRunnerException(
+                f&#34;Error signing image ({container_image_tag}): {error}&#34;
             ) from error
 
         # get image signature file path
@@ -526,7 +560,7 @@ class PodmanSign(StepImplementer):
         )
 
         if len(signature_file_paths) != 1:
-            raise RuntimeError(
+            raise StepRunnerException(
                 f&#34;Unexpected number of signature files, expected 1: {signature_file_paths}&#34;
             )
 
@@ -540,43 +574,68 @@ class PodmanSign(StepImplementer):
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li><a title="tssc.step_implementer.StepImplementer" href="../../step_implementer.html#tssc.step_implementer.StepImplementer">StepImplementer</a></li>
+<li><a title="ploigos_step_runner.step_implementer.StepImplementer" href="../../step_implementer.html#ploigos_step_runner.step_implementer.StepImplementer">StepImplementer</a></li>
 <li>abc.ABC</li>
 </ul>
-<h3>Class variables</h3>
+<h3>Static methods</h3>
 <dl>
-<dt id="tssc.step_implementers.sign_container_image.podman_sign.PodmanSign.GPG_IMPORT_FINGER_PRINT_REGEX"><code class="name">var <span class="ident">GPG_IMPORT_FINGER_PRINT_REGEX</span></code></dt>
+<dt id="ploigos_step_runner.step_implementers.sign_container_image.podman_sign.PodmanSign.step_implementer_config_defaults"><code class="name flex">
+<span>def <span class="ident">step_implementer_config_defaults</span></span>(<span>)</span>
+</code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Getter for the StepImplementer's configuration defaults.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>dict</code></dt>
+<dd>Default values to use for step configuration values.</dd>
+</dl>
+<h2 id="notes">Notes</h2>
+<p>These are the lowest precedence configuration values.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def step_implementer_config_defaults():
+    &#34;&#34;&#34;Getter for the StepImplementer&#39;s configuration defaults.
+
+    Returns
+    -------
+    dict
+        Default values to use for step configuration values.
+
+    Notes
+    -----
+    These are the lowest precedence configuration values.
+    &#34;&#34;&#34;
+    return DEFAULT_CONFIG</code></pre>
+</details>
 </dd>
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="tssc.step_implementer.StepImplementer" href="../../step_implementer.html#tssc.step_implementer.StepImplementer">StepImplementer</a></b></code>:
+<li><code><b><a title="ploigos_step_runner.step_implementer.StepImplementer" href="../../step_implementer.html#ploigos_step_runner.step_implementer.StepImplementer">StepImplementer</a></b></code>:
 <ul class="hlist">
-<li><code><a title="tssc.step_implementer.StepImplementer.config" href="../../step_implementer.html#tssc.step_implementer.StepImplementer.config">config</a></code></li>
-<li><code><a title="tssc.step_implementer.StepImplementer.create_working_dir_sub_dir" href="../../step_implementer.html#tssc.step_implementer.StepImplementer.create_working_dir_sub_dir">create_working_dir_sub_dir</a></code></li>
-<li><code><a title="tssc.step_implementer.StepImplementer.current_results" href="../../step_implementer.html#tssc.step_implementer.StepImplementer.current_results">current_results</a></code></li>
-<li><code><a title="tssc.step_implementer.StepImplementer.current_step_results" href="../../step_implementer.html#tssc.step_implementer.StepImplementer.current_step_results">current_step_results</a></code></li>
-<li><code><a title="tssc.step_implementer.StepImplementer.environment" href="../../step_implementer.html#tssc.step_implementer.StepImplementer.environment">environment</a></code></li>
-<li><code><a title="tssc.step_implementer.StepImplementer.get_config_value" href="../../step_implementer.html#tssc.step_implementer.StepImplementer.get_config_value">get_config_value</a></code></li>
-<li><code><a title="tssc.step_implementer.StepImplementer.get_copy_of_runtime_step_config" href="../../step_implementer.html#tssc.step_implementer.StepImplementer.get_copy_of_runtime_step_config">get_copy_of_runtime_step_config</a></code></li>
-<li><code><a title="tssc.step_implementer.StepImplementer.get_step_results" href="../../step_implementer.html#tssc.step_implementer.StepImplementer.get_step_results">get_step_results</a></code></li>
-<li><code><a title="tssc.step_implementer.StepImplementer.get_working_dir" href="../../step_implementer.html#tssc.step_implementer.StepImplementer.get_working_dir">get_working_dir</a></code></li>
-<li><code><a title="tssc.step_implementer.StepImplementer.global_config_defaults" href="../../step_implementer.html#tssc.step_implementer.StepImplementer.global_config_defaults">global_config_defaults</a></code></li>
-<li><code><a title="tssc.step_implementer.StepImplementer.global_environment_config_defaults" href="../../step_implementer.html#tssc.step_implementer.StepImplementer.global_environment_config_defaults">global_environment_config_defaults</a></code></li>
-<li><code><a title="tssc.step_implementer.StepImplementer.has_config_value" href="../../step_implementer.html#tssc.step_implementer.StepImplementer.has_config_value">has_config_value</a></code></li>
-<li><code><a title="tssc.step_implementer.StepImplementer.required_runtime_step_config_keys" href="../../step_implementer.html#tssc.step_implementer.StepImplementer.required_runtime_step_config_keys">required_runtime_step_config_keys</a></code></li>
-<li><code><a title="tssc.step_implementer.StepImplementer.results_file_path" href="../../step_implementer.html#tssc.step_implementer.StepImplementer.results_file_path">results_file_path</a></code></li>
-<li><code><a title="tssc.step_implementer.StepImplementer.run_step" href="../../step_implementer.html#tssc.step_implementer.StepImplementer.run_step">run_step</a></code></li>
-<li><code><a title="tssc.step_implementer.StepImplementer.step_config" href="../../step_implementer.html#tssc.step_implementer.StepImplementer.step_config">step_config</a></code></li>
-<li><code><a title="tssc.step_implementer.StepImplementer.step_config_overrides" href="../../step_implementer.html#tssc.step_implementer.StepImplementer.step_config_overrides">step_config_overrides</a></code></li>
-<li><code><a title="tssc.step_implementer.StepImplementer.step_environment_config" href="../../step_implementer.html#tssc.step_implementer.StepImplementer.step_environment_config">step_environment_config</a></code></li>
-<li><code><a title="tssc.step_implementer.StepImplementer.step_implementer_config_defaults" href="../../step_implementer.html#tssc.step_implementer.StepImplementer.step_implementer_config_defaults">step_implementer_config_defaults</a></code></li>
-<li><code><a title="tssc.step_implementer.StepImplementer.step_name" href="../../step_implementer.html#tssc.step_implementer.StepImplementer.step_name">step_name</a></code></li>
-<li><code><a title="tssc.step_implementer.StepImplementer.sub_step_name" href="../../step_implementer.html#tssc.step_implementer.StepImplementer.sub_step_name">sub_step_name</a></code></li>
-<li><code><a title="tssc.step_implementer.StepImplementer.write_results" href="../../step_implementer.html#tssc.step_implementer.StepImplementer.write_results">write_results</a></code></li>
-<li><code><a title="tssc.step_implementer.StepImplementer.write_working_file" href="../../step_implementer.html#tssc.step_implementer.StepImplementer.write_working_file">write_working_file</a></code></li>
+<li><code><a title="ploigos_step_runner.step_implementer.StepImplementer.config" href="../../step_implementer.html#ploigos_step_runner.step_implementer.StepImplementer.config">config</a></code></li>
+<li><code><a title="ploigos_step_runner.step_implementer.StepImplementer.create_working_dir_sub_dir" href="../../step_implementer.html#ploigos_step_runner.step_implementer.StepImplementer.create_working_dir_sub_dir">create_working_dir_sub_dir</a></code></li>
+<li><code><a title="ploigos_step_runner.step_implementer.StepImplementer.environment" href="../../step_implementer.html#ploigos_step_runner.step_implementer.StepImplementer.environment">environment</a></code></li>
+<li><code><a title="ploigos_step_runner.step_implementer.StepImplementer.get_config_value" href="../../step_implementer.html#ploigos_step_runner.step_implementer.StepImplementer.get_config_value">get_config_value</a></code></li>
+<li><code><a title="ploigos_step_runner.step_implementer.StepImplementer.get_copy_of_runtime_step_config" href="../../step_implementer.html#ploigos_step_runner.step_implementer.StepImplementer.get_copy_of_runtime_step_config">get_copy_of_runtime_step_config</a></code></li>
+<li><code><a title="ploigos_step_runner.step_implementer.StepImplementer.get_result_value" href="../../step_implementer.html#ploigos_step_runner.step_implementer.StepImplementer.get_result_value">get_result_value</a></code></li>
+<li><code><a title="ploigos_step_runner.step_implementer.StepImplementer.get_value" href="../../step_implementer.html#ploigos_step_runner.step_implementer.StepImplementer.get_value">get_value</a></code></li>
+<li><code><a title="ploigos_step_runner.step_implementer.StepImplementer.global_config_defaults" href="../../step_implementer.html#ploigos_step_runner.step_implementer.StepImplementer.global_config_defaults">global_config_defaults</a></code></li>
+<li><code><a title="ploigos_step_runner.step_implementer.StepImplementer.global_environment_config_defaults" href="../../step_implementer.html#ploigos_step_runner.step_implementer.StepImplementer.global_environment_config_defaults">global_environment_config_defaults</a></code></li>
+<li><code><a title="ploigos_step_runner.step_implementer.StepImplementer.has_config_value" href="../../step_implementer.html#ploigos_step_runner.step_implementer.StepImplementer.has_config_value">has_config_value</a></code></li>
+<li><code><a title="ploigos_step_runner.step_implementer.StepImplementer.run_step" href="../../step_implementer.html#ploigos_step_runner.step_implementer.StepImplementer.run_step">run_step</a></code></li>
+<li><code><a title="ploigos_step_runner.step_implementer.StepImplementer.step_config" href="../../step_implementer.html#ploigos_step_runner.step_implementer.StepImplementer.step_config">step_config</a></code></li>
+<li><code><a title="ploigos_step_runner.step_implementer.StepImplementer.step_config_overrides" href="../../step_implementer.html#ploigos_step_runner.step_implementer.StepImplementer.step_config_overrides">step_config_overrides</a></code></li>
+<li><code><a title="ploigos_step_runner.step_implementer.StepImplementer.step_environment_config" href="../../step_implementer.html#ploigos_step_runner.step_implementer.StepImplementer.step_environment_config">step_environment_config</a></code></li>
+<li><code><a title="ploigos_step_runner.step_implementer.StepImplementer.step_name" href="../../step_implementer.html#ploigos_step_runner.step_implementer.StepImplementer.step_name">step_name</a></code></li>
+<li><code><a title="ploigos_step_runner.step_implementer.StepImplementer.sub_step_implementer_name" href="../../step_implementer.html#ploigos_step_runner.step_implementer.StepImplementer.sub_step_implementer_name">sub_step_implementer_name</a></code></li>
+<li><code><a title="ploigos_step_runner.step_implementer.StepImplementer.sub_step_name" href="../../step_implementer.html#ploigos_step_runner.step_implementer.StepImplementer.sub_step_name">sub_step_name</a></code></li>
+<li><code><a title="ploigos_step_runner.step_implementer.StepImplementer.work_dir_path" href="../../step_implementer.html#ploigos_step_runner.step_implementer.StepImplementer.work_dir_path">work_dir_path</a></code></li>
+<li><code><a title="ploigos_step_runner.step_implementer.StepImplementer.workflow_result" href="../../step_implementer.html#ploigos_step_runner.step_implementer.StepImplementer.workflow_result">workflow_result</a></code></li>
+<li><code><a title="ploigos_step_runner.step_implementer.StepImplementer.write_working_file" href="../../step_implementer.html#ploigos_step_runner.step_implementer.StepImplementer.write_working_file">write_working_file</a></code></li>
 </ul>
 </li>
 </ul>
@@ -589,22 +648,21 @@ class PodmanSign(StepImplementer):
 <div class="toc">
 <ul>
 <li><a href="#step-configuration">Step Configuration</a></li>
-<li><a href="#expected-previous-step-results">Expected Previous Step Results</a></li>
-<li><a href="#results">Results</a></li>
+<li><a href="#result-artifacts">Result Artifacts</a></li>
 </ul>
 </div>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tssc.step_implementers.sign_container_image" href="index.html">tssc.step_implementers.sign_container_image</a></code></li>
+<li><code><a title="ploigos_step_runner.step_implementers.sign_container_image" href="index.html">ploigos_step_runner.step_implementers.sign_container_image</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="tssc.step_implementers.sign_container_image.podman_sign.PodmanSign" href="#tssc.step_implementers.sign_container_image.podman_sign.PodmanSign">PodmanSign</a></code></h4>
+<h4><code><a title="ploigos_step_runner.step_implementers.sign_container_image.podman_sign.PodmanSign" href="#ploigos_step_runner.step_implementers.sign_container_image.podman_sign.PodmanSign">PodmanSign</a></code></h4>
 <ul class="">
-<li><code><a title="tssc.step_implementers.sign_container_image.podman_sign.PodmanSign.GPG_IMPORT_FINGER_PRINT_REGEX" href="#tssc.step_implementers.sign_container_image.podman_sign.PodmanSign.GPG_IMPORT_FINGER_PRINT_REGEX">GPG_IMPORT_FINGER_PRINT_REGEX</a></code></li>
+<li><code><a title="ploigos_step_runner.step_implementers.sign_container_image.podman_sign.PodmanSign.step_implementer_config_defaults" href="#ploigos_step_runner.step_implementers.sign_container_image.podman_sign.PodmanSign.step_implementer_config_defaults">step_implementer_config_defaults</a></code></li>
 </ul>
 </li>
 </ul>
@@ -613,7 +671,7 @@ class PodmanSign(StepImplementer):
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
 </footer>
 </body>
 </html>
